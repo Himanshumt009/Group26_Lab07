@@ -52,3 +52,18 @@ void UART5_Read(void) {
         dataReceivedFlag = false; // Reset flag after processing
     }
 }
+void UART5_send(void) {
+    if (!(GPIO_PORTF_DATA_R & 0x01)) { // Button 1 (SW1) pressed
+        UART5_Transmit(0xF0);
+        while (!(GPIO_PORTF_DATA_R & 0x01)); // Wait until released
+    }
+    if (!(GPIO_PORTF_DATA_R & 0x10)) { // Button 2 (SW2) pressed
+        UART5_Transmit(0xAA);
+        while (!(GPIO_PORTF_DATA_R & 0x10)); // Wait until released
+    }
+}
+
+void UART5_Transmit(uint8_t data) {
+    while (UART5_FR_R & UART_FR_TXFF);  // Wait until the transmit FIFO is not full
+    UART5_DR_R = data;                  // Transmit data
+}
