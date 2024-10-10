@@ -38,3 +38,17 @@ uint8_t UART5_ReceiveByte(void) {
     while ((UART5_FR_R & 0x10) != 0); // Wait until RXFE is 0
     return UART5_DR_R; // Read data
 }
+void UART5_Read(void) {
+    if (dataReceivedFlag) {
+        receivedByte = UART5_ReceiveByte();
+
+        if (receivedByte == 0xAA) {
+            GPIO_PORTF_DATA_R = 0x08;  // Green LED
+        } else if (receivedByte == 0xF0) {
+            GPIO_PORTF_DATA_R = 0x04;  // Blue LED
+        } else {
+            GPIO_PORTF_DATA_R = 0x02;  // Red LED for error
+        }
+        dataReceivedFlag = false; // Reset flag after processing
+    }
+}
