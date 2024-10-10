@@ -25,3 +25,16 @@ void PORTE_Initialisation(void) {
     GPIO_PORTE_PCTL_R &= ~0x00FF0000;
     GPIO_PORTE_PCTL_R |= 0x00110000;       // Set PE4 and PE5 for UART
 }
+void UART5_Initialisation(void) {
+    UART5_CTL_R = 0x00;                     // Disable UART before configuration
+    UART5_IBRD_R = 104;                     // Integer part of BRD
+    UART5_FBRD_R = 11;                      // Fractional part of BRD
+    UART5_CC_R = 0x00;                      // Use system clock
+    UART5_LCRH_R = 0x72;                    // 8 bits, odd parity, 1 stop bit
+    UART5_CTL_R = 0x301;                    // Enable UART
+}
+
+uint8_t UART5_ReceiveByte(void) {
+    while ((UART5_FR_R & 0x10) != 0); // Wait until RXFE is 0
+    return UART5_DR_R; // Read data
+}
